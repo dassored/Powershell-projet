@@ -1,0 +1,8 @@
+# Récupération des informations sur les mises à jour Windows
+$windowsUpdates = get-wmiObject -class "win32_QuickFixEngineering" | Select-Object -Property "HotFixID", "InstalledOn"
+
+# Formatage des informations pour le rapport
+$updatesFormatted = $windowsUpdates | Sort-Object -Property InstalledOn | Select-Object -Property @{Name="HotFixID";Expression={$_.HotFixID}}, @{Name="InstalledOn";Expression={($_.InstalledOn).ToShortDateString()}}
+
+# Affichage du rapport
+$updatesFormatted | Format-Table -AutoSize
