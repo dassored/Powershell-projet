@@ -1,0 +1,25 @@
+# Définition des URL de téléchargement
+$vscodiumUrl = "https://github.com/VSCodium/vscodium/releases/latest/download/VSCodiumSetup-x64.exe"
+$librewolfUrl = "https://github.com/librewolf-community/browser/releases/latest/download/librewolf-RELEASE-1.0.0.win64.installer.exe"
+
+# Définition des emplacements de téléchargement
+$vscodiumPath = "$env:TEMP\VSCodiumSetup-x64.exe"
+$librewolfPath = "$env:TEMP\librewolf-RELEASE-1.0.0.win64.installer.exe"
+
+# Téléchargement de VSCodium
+Invoke-WebRequest -Uri $vscodiumUrl -OutFile $vscodiumPath
+
+# Installation de VSCodium
+Start-Process -FilePath $vscodiumPath -ArgumentList "/verysilent" -Wait
+
+# Téléchargement de LibreWolf
+Invoke-WebRequest -Uri $librewolfUrl -OutFile $librewolfPath
+
+# Installation de LibreWolf
+Start-Process -FilePath $librewolfPath -ArgumentList "/S" -Wait
+
+# Nettoyage des fichiers temporaires
+Remove-Item -Path $vscodiumPath
+Remove-Item -Path $librewolfPath
+
+Write-Host "VSCodium et LibreWolf ont été téléchargés et installés avec succès."
