@@ -1,0 +1,35 @@
+# Activer l'exécution de scripts PowerShell en mode restreint
+Set-ExecutionPolicy Restricted
+
+# Désactiver le partage de fichiers et d'imprimantes sur les réseaux publics
+Set-NetConnectionProfile -Name "Public" -NetworkCategory Public
+
+# Désactiver le partage de fichiers et d'imprimantes sur les réseaux non identifiés
+Set-NetConnectionProfile -Name "Unidentified" -NetworkCategory Public
+
+# Activer le pare-feu Windows
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+
+# Activer les mises à jour automatiques de Windows
+Set-Service -Name "wuauserv" -StartupType Automatic
+Start-Service -Name "wuauserv"
+
+
+# Activer la protection SmartScreen pour les applications et les fichiers
+Set-ProcessMitigation -System -Enable SmartScreen
+
+# Activer Windows Defender en tant qu'antivirus par défaut
+Set-MpPreference -DisableRealtimeMonitoring 0
+
+# Activer le contrôle des comptes d'utilisateur (UAC)
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 1
+
+# Supprimer les logiciels indésirables et les extensions malveillantes
+Get-AppxPackage -AllUsers | where-object {$_.IsFramework -eq $false} | Remove-AppxPackage
+Get-AppxProvisionedPackage -Online | where-object {$_.IsFramework -eq $false} | Remove-AppxProvisionedPackage -Online
+
+# Défragmenter les disques pour améliorer les performances
+Optimize-Volume -DriveLetter "C" -Defrag -Verbose
+
+# Redémarrer l'ordinateur pour appliquer les modifications
+Restart-Computer
