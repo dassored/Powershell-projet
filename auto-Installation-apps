@@ -1,0 +1,37 @@
+# Définition des URL de téléchargement des logiciels
+$braveUrl = "https://github.com/brave/brave-browser/releases/latest/download/BraveBrowserSetup.exe"
+$firefoxUrl = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+$vivaldiUrl = "https://downloads.vivaldi.com/stable/Vivaldi.64.0.3282.167.exe"
+$librewolfUrl = "https://librewolf-community.gitlab.io/installers/windows/librewolf-official-release.exe"
+$vscodiumUrl = "https://github.com/VSCodium/vscodium/releases/latest/download/VSCodiumSetup-x64.exe"
+
+# Fonction pour télécharger et exécuter un fichier à partir d'une URL
+function DownloadAndExecute($url) {
+    $tempFile = [System.IO.Path]::GetTempFileName() + ".exe"
+    $webClient = New-Object System.Net.WebClient
+    $webClient.DownloadFile($url, $tempFile)
+    Start-Process -Wait -FilePath $tempFile
+    Remove-Item $tempFile -Force
+}
+
+# Installation de Brave
+Write-Host "Installation de Brave..."
+DownloadAndExecute $braveUrl
+
+# Installation de Firefox
+Write-Host "Installation de Firefox..."
+DownloadAndExecute $firefoxUrl
+
+# Installation de Vivaldi
+Write-Host "Installation de Vivaldi..."
+DownloadAndExecute $vivaldiUrl
+
+# Installation de LibreWolf
+Write-Host "Installation de LibreWolf..."
+DownloadAndExecute $librewolfUrl
+
+# Installation de VSCodium
+Write-Host "Installation de VSCodium..."
+DownloadAndExecute $vscodiumUrl
+
+Write-Host "Installation terminée."
