@@ -1,0 +1,36 @@
+
+import subprocess
+import re
+from datetime import datetime, timedelta
+
+# Configuration des paramètres
+max_inactive_days = 90  # Nombre maximal de jours d'inactivité avant la désactivation
+
+# Obtient la date actuelle
+today = datetime.now()
+
+# Récupère les journaux d'événements de sécurité contenant les informations de connexion
+command = "Get-WinEvent -LogName Security | Where-Object { $_.Id -eq 4624 -or $_.Id -eq 4634 } | Select-Object Properties"
+events = subprocess.run(["powershell", command], capture_output=True, text=True).stdout
+
+# Dictionnaire pour stocker les informations de connexion des utilisateurs
+user_login_info = {}
+
+# Analyse les événements pour obtenir les informations de connexion des utilisateurs
+event_pattern = re.compile(r"AccountName\s+:\s+(.+)\r?\n.*?TimeCreated\s+:\s+(.+)\s+")
+matches = event_pattern.findall(events)
+
+for match in matches:
+    user_name = match[0]
+    login_time = datetime.strptime(match[1], "%m/%d/%Y %I:%M:%S %p")
+    user_login_info[user_name] = login_time
+
+# Désactive les comptes inactifs
+for user, last_login_time in user_login_info.items():
+    inactive_days = (today - last_login_time).days
+
+    if inactive_days >= max_inactive_days:
+        print(f"Désactivation du compte utilisateur {user} en raison d'inactivité ({inactive_days} jours).")
+        subprocess.run(["net", "user", user, "/active:no"])
+
+print("Opération terminée.")
