@@ -1,0 +1,22 @@
+# Collecter des informations sur les processus en cours
+$processes = Get-Process | Select-Object Id, ProcessName, StartTime, Responding, MainWindowTitle
+
+# Collecter des informations sur les connexions réseau actives
+$networkConnections = Get-NetTCPConnection | Where-Object { $_.State -eq "Established" } | Select-Object LocalAddress, LocalPort, RemoteAddress, RemotePort, State, OwningProcess
+
+# Collecter des informations sur les utilisateurs actifs
+$activeUsers = Get-WmiObject Win32_ComputerSystem | Select-Object UserName
+$loggedOnUsers = Get-WmiObject Win32_ComputerSystem | ForEach-Object { $_.UserName.split("\")[1] }
+
+# Afficher les informations collectées
+Write-Host "Informations sur les processus en cours :"
+$processes | Format-Table -AutoSize
+
+Write-Host "`nInformations sur les connexions réseau actives :"
+$networkConnections | Format-Table -AutoSize
+
+Write-Host "`nUtilisateurs actifs sur le système :"
+$activeUsers | Format-Table -AutoSize
+
+Write-Host "`nUtilisateurs connectés au système :"
+$loggedOnUsers | Format-Table -AutoSize
