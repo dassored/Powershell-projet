@@ -1,0 +1,10 @@
+# Supprimer les fichiers temporaires
+$senv: TEMPemp  | Get-ChildItem -Recurse | Remove-Item -Force -Recurse
+
+# Supprimer les fichiers temporaires de Windows
+Remove-Item -Path "$env:SystemRoot\Temp\*" -Force
+remove-Item -Path "$env:Windir\Prefetch\*" -Force
+
+
+# Vider la corbeille
+Clear-RecycleBin - Force
