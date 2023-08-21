@@ -1,0 +1,3 @@
+$printerName = "EPSONGTX"
+remove-Printer -Name $printerName
+Write-host "imprimante supprimée: $printerName"
