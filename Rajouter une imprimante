@@ -1,0 +1,4 @@
+$printerName = "EPSONGTX"
+$printerPort = "Nom du port d'inpression" #"\\serveur\imprimante"
+add-printer -NAme $printerNAme -PortName $printerPort
+write-host "imprimante ajoutée : $printeNAme"
