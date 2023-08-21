@@ -1,0 +1,50 @@
+#mode administareur powershell!!
+# Obtenir le nom de l'ordinateur
+$computerName = $env:COMPUTERNAME
+
+# Définir le chemin du fichier de rapport
+$reportPath = "C:\AuditSecurityReportw11.txt"
+
+# Fonction pour ajouter des détails au rapport
+function AddToReport($text) {
+    $text | Out-File -Append -FilePath $reportPath
+}
+
+# En-tête du rapport
+AddToReport "Audit de Sécurité - Rapport pour $computerName"
+AddToReport ("Date: {0}" -f (Get-Date))
+AddToReport ("=" * 50)
+
+# Vérification des mises à jour
+$updateStatus = Get-WmiObject -Class Win32_QuickFixEngineering | Where-Object { $_.Description -like "*Security Update*" }
+if ($updateStatus) {
+    AddToReport "Mises à jour de sécurité installées:"
+    $updateStatus | ForEach-Object {
+        AddToReport $_.Description
+    }
+} else {
+    AddToReport "Aucune mise à jour de sécurité installée."
+}
+
+# Vérification du pare-feu Windows
+$firewallStatus = Get-NetFirewallProfile | Select-Object -Property Name, Enabled
+AddToReport ("=" * 50)
+AddToReport "Statut du Pare-feu Windows:"
+$firewallStatus | ForEach-Object {
+    AddToReport ("{0}: {1}" -f $_.Name, ("Activé" | Where-Object { $_ -eq $_.Enabled } | ForEach-Object { $_ }))
+}
+
+# Vérification des comptes utilisateurs avec privilèges élevés 
+
+$adminUsers = Get-LocalGroupMember -Group "Administrateurs"
+AddToReport ("=" * 50)
+AddToReport "Comptes utilisateurs avec privilèges élevés:"
+$adminUsers | ForEach-Object {
+    AddToReport $_.Name
+}
+
+# Fin du rapport
+AddToReport ("=" * 50)
+AddToReport "Fin du rapport."
+
+Write-Host "Audit de sécurité terminé. Rapport généré dans $reportPath."
